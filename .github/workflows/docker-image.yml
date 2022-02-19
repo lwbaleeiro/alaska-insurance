@@ -24,7 +24,6 @@ jobs:
         run: mvn spring-boot:build-image -DskipTests
         
       - name: Docker Compose Build
-        working-directory: ./
         run: docker-compose build
 
       - name: Push to Docker Hub Container Registry
