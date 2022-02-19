@@ -36,10 +36,10 @@ services:
       POSTGRES_DB: alaska_db
 
   alaska:
-    image: lwbaleeiro/alaska:0.0.1-SNAPSHOT
+    image: lwbaleeiro/alaska:latest
     restart: always
     ports:
-      - 8000:8000
+      - 8080:8080
     depends_on:
       - alaska-db
       - rabbit-mq
