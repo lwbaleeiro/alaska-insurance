@@ -22,9 +22,9 @@ jobs:
           distribution: 'adopt'
       - name: Build Alasja Insurance Jar
         run: mvn spring-boot:build-image -DskipTests
-        
-      - name: Docker Compose Build
-        run: docker-compose build
+
+      - name: Run docker-compose stack
+        run: docker-compose -f docker-compose.yml up -d
 
       - name: Push to Docker Hub Container Registry
         run: |
