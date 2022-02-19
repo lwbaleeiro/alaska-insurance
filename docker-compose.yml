@@ -36,7 +36,6 @@ services:
       POSTGRES_DB: alaska_db
 
   alaska:
-    image: lwbaleeiro/alaska:latest
     build:
       context: .
       dockerfile: /Dockerfile
