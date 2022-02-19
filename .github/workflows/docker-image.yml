@@ -22,7 +22,6 @@ jobs:
           distribution: 'adopt'
 
       - name: Build Alaska Jar
-        working-directory: ./
         run: mvn clean package -DskipTests
 
       - name: Docker Compose Build
