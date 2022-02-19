@@ -1,0 +1,206 @@
+package br.com.alaska.service.user.impl;
+
+import br.com.alaska.config.mail.EmailBuilderHtml;
+import br.com.alaska.config.mail.EmailSenderService;
+import br.com.alaska.controllers.user.response.UserResponse;
+import br.com.alaska.entity.token.ConfirmationToken;
+import br.com.alaska.entity.user.User;
+import br.com.alaska.exceptions.user.*;
+import br.com.alaska.repository.user.UserRepository;
+import br.com.alaska.service.token.ConfirmationTokenService;
+import br.com.alaska.service.user.EmailValidatorService;
+import br.com.alaska.service.user.UserService;
+import br.com.alaska.service.user.ValidarCpfService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+@Slf4j
+public record UserServiceImpl(
+        UserRepository userRepository,
+        EmailValidatorService emailValidatorService,
+        ConfirmationTokenService confirmationTokenService,
+        EmailSenderService emailSenderService,
+        EmailBuilderHtml emailBuilderHtml) implements UserService {
+
+    private static final String ACTIVATION_EMAIL_LINK = "http://localhost:8080/v1/users/confirmation?token=";
+
+    @Override
+    public void createUser(User user) {
+
+        log.info(" createUser");
+
+        this.checkUserEmailIsValid(user);
+        this.checkUserCpfIsValid(user);
+
+        Optional<User> optionalUser = userRepository.findByCpf(user.getCpf());
+        this.checkUserAlreadyExistsCpf(optionalUser);
+
+        Optional<User> optionalUserEmail = userRepository.findByEmail(user.getEmail());
+        this.checkUserAlreadyExistsEmail(optionalUserEmail);
+
+        try {
+
+            userRepository.save(user);
+
+        } catch (Exception error) {
+            log.error("error: {}", error.getMessage());
+            throw new CreateUserDatabaseException();
+        }
+
+        String token = UUID.randomUUID().toString();
+        log.info(" token {}", token);
+        confirmationTokenService.save(new ConfirmationToken(token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                user));
+
+        String email = emailBuilderHtml.buildEmail(user.getName(), ACTIVATION_EMAIL_LINK + token);
+        emailSenderService.send(user.getEmail(), email);
+    }
+
+    @Override
+    public void confirmation(String token) {
+        log.info(" confirmation token {}", token);
+
+        ConfirmationToken confirmationToken = confirmationTokenService.findToken(token);
+        confirmationToken.setConfirmedAt(LocalDateTime.now());
+        confirmationTokenService.save(confirmationToken);
+
+        Optional<User> optionalUser = userRepository.findById(confirmationToken.getUser().getId());
+        //TODO criar conta após ativar usuário
+        optionalUser.ifPresent(user -> {
+            log.info("user account enabled!");
+            user.setEnabled(Boolean.TRUE);
+
+            try {
+                userRepository.save(user);
+
+            } catch (Exception error) {
+                log.error("error: {}", error.getMessage());
+                throw new CreateUserDatabaseException();
+            }
+        });
+    }
+
+    @Override
+    public UserResponse alterUser(User user) {
+
+        log.info(" alter user");
+
+        Optional<User> userFound = userRepository.findById(user.getId());
+        if (userFound.isEmpty()) {
+            throw new UserNotFoundByIdException();
+        }
+
+        this.checkUserEmailIsValid(user);
+        this.checkUserCpfIsValid(user);
+        try {
+            User userAlter = userRepository.save(user);
+
+            return UserResponse.builder()
+                    .cellphone(userAlter.getCellphone())
+                    .cpf(userAlter.getCpf())
+                    .dateOfBirth(userAlter.getDateOfBirth())
+                    .email(userAlter.getEmail())
+                    .name(userAlter.getName())
+                    .sex(userAlter.getSex())
+                    .build();
+
+        } catch (Exception error) {
+            log.error("error: {}", error.getMessage());
+            throw new CreateUserDatabaseException();
+        }
+    }
+
+    @Override
+    public void inactivate(String id) {
+
+        log.info(" inactivate {} ", id);
+
+        Optional<User> optionalUser = userRepository.findById(Long.valueOf(id));
+        User user = optionalUser.orElseThrow(UserNotFoundByIdException::new);
+        user.setEnabled(Boolean.FALSE);
+
+        try {
+            userRepository.save(user);
+
+        } catch (Exception error) {
+            log.error("error: {}", error.getMessage());
+            throw new CreateUserDatabaseException();
+        }
+    }
+
+    @Override
+    public UserResponse findUserById(String id) {
+
+        log.info(" findUserById {} ", id);
+
+        Optional<User> optionalUser = userRepository.findById(Long.valueOf(id));
+
+        User user = optionalUser.orElseThrow(UserNotFoundByIdException::new);
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .cellphone(user.getCellphone())
+                .cpf(user.getCpf())
+                .dateOfBirth(user.getDateOfBirth())
+                .email(user.getEmail())
+                .name(user.getName())
+                .sex(user.getSex())
+                .build();
+    }
+
+    @Override
+    public List<UserResponse> findAll() {
+
+        log.info(" findAll");
+
+        List<UserResponse> userResponses = new ArrayList<>();
+        List<User> all = userRepository.findAll();
+
+        for (User user : all) {
+            userResponses.add(UserResponse.builder()
+                    .id(user.getId())
+                    .cellphone(user.getCellphone())
+                    .cpf(user.getCpf())
+                    .dateOfBirth(user.getDateOfBirth())
+                    .email(user.getEmail())
+                    .name(user.getName())
+                    .sex(user.getSex())
+                    .build());
+        }
+
+        return userResponses;
+    }
+
+    private void checkUserAlreadyExistsEmail(Optional<User> optionalUserEmail) {
+        if (optionalUserEmail.isPresent()) {
+            throw new UserAlreadyExistsWithEmailException();
+        }
+    }
+
+    private void checkUserAlreadyExistsCpf(Optional<User> optionalUser) {
+        if (optionalUser.isPresent()) {
+            throw new UserAlreadyExistsWithCpfException();
+        }
+    }
+
+    private void checkUserEmailIsValid(User user) {
+        if (!emailValidatorService.test(user.getEmail())) {
+            throw new UserEmailNotValidException();
+        }
+    }
+
+    private void checkUserCpfIsValid(User user) {
+        if (!ValidarCpfService.valid(user.getCpf())) {
+            throw new UserCpfIsNotValidException();
+        }
+    }
+}
