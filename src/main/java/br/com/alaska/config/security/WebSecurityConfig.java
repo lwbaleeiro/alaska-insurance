@@ -31,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers( "/v3/api-docs").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/auth").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/user/create").permitAll()
                 .anyRequest().authenticated()
@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(daoAuthenticationProvider());
     }
 

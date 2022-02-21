@@ -1,26 +1,6 @@
 version: '3.4'
 
 services:
-  zipkin-server:
-    image: openzipkin/zipkin:2.23.2
-    ports:
-      - 9411:9411
-    restart: always
-    depends_on:
-      - rabbit-mq
-    networks:
-      - services-network
-    environment:
-      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
-
-  rabbit-mq:
-    image: rabbitmq:3.8.14-management
-    ports:
-      - 5672:5672
-      - 15672:15672
-    networks:
-      - services-network
-
   alaska-db:
     image: postgres:latest
     restart: always
@@ -47,16 +27,12 @@ services:
       - services-network
     environment:
       TZ: America/Sao_Paulo
-      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
       SPRING.DATASOURCE.URL: jdbc:postgresql://alaska-db:5432/alaska_db
       SPRING.DATASOURCE.USERNAME: postgres
       SPRING.DATASOURCE.PASSWORD: postgres
       SPRING.FLYWAY.URL: jdbc:postgresql://alaska-db:5432/alaska_db
       SPRING.FLYWAY.USER: postgres
       SPRING.FLYWAY.PASSWORD: postgres
-      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
-      SPRING_RABBITMQ_HOST: rabbit-mq
-      SPRING_ZIPKIN_SENDER_TYPE: rabbit
 
 networks:
   services-network:
