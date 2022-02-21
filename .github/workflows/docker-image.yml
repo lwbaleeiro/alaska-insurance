@@ -20,7 +20,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Build Alasja Insurance Jar
+      - name: Build Alaska Insurance Jar
         run: mvn spring-boot:build-image -DskipTests
 
       - name: Run docker-compose stack

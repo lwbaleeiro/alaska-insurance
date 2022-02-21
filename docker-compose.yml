@@ -16,7 +16,8 @@ services:
       POSTGRES_DB: alaska_db
 
   alaska:
-    image: lwbaleeiro/alaska:latest
+    #image: lwbaleeiro/alaska:latest
+    image: lwbaleeiro/alaska:0.0.1-SNAPSHOT
     restart: always
     ports:
       - 8080:8080
