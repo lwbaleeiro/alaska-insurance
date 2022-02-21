@@ -23,7 +23,6 @@ services:
       - 8080:8080
     depends_on:
       - alaska-db
-      - rabbit-mq
     networks:
       - services-network
     environment:

@@ -1,5 +1,6 @@
 package br.com.alaska.config.interceptors;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 @Slf4j
@@ -20,7 +22,6 @@ import java.util.ArrayList;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ControllerExceptionHandler {
 
-    private static final String SAO_ARGUMENT_NOT_VALID = "sicred.error.argumentNotValid";
     private static final String ERROR_TO_RESOLVE_EXCEPTION_HANDLER = "Error to resolve exception handler";
     private static final String SAO_EXCEPTION_HANDLER_ERROR_TO_RESOLVE_EXCEPTION = "sao.exceptionHandler.errorToResolveException";
 
@@ -45,10 +46,42 @@ public class ControllerExceptionHandler {
             final ArrayList<String> errors = new ArrayList<>();
             methodArgumentNotValidException.getBindingResult().getFieldErrors().forEach(field -> errors.add(field.getField() + ": " + field.getDefaultMessage()));
 
-            return new ExceptionJson(SAO_ARGUMENT_NOT_VALID, errors.toString());
+            return new ExceptionJson("alaska.error.argumentNotValid", errors.toString());
         } catch (Exception exception) {
             log.error(ERROR_TO_RESOLVE_EXCEPTION_HANDLER, exception);
             return new ExceptionJson(SAO_EXCEPTION_HANDLER_ERROR_TO_RESOLVE_EXCEPTION, exception.getMessage());
+        }
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DateTimeParseException.class)
+    @ResponseBody
+    public ExceptionJson dateTimeParseException(final DateTimeParseException dateTimeParseException) {
+
+        log.error(dateTimeParseException.getMessage(), dateTimeParseException);
+        try {
+            var error = "Error parsing value '" + dateTimeParseException.getParsedString() + "'. Expecting date format yyyy-MM-dd";
+
+            return new ExceptionJson("alaska.error.dateTimeInvalidFormat", error);
+        } catch (Exception exception) {
+            log.error(ERROR_TO_RESOLVE_EXCEPTION_HANDLER, exception);
+            return new ExceptionJson("alaska.error.dateTimeInvalidFormat", exception.getMessage());
+        }
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidFormatException.class)
+    @ResponseBody
+    public ExceptionJson invalidFormatException(final InvalidFormatException invalidFormatException) {
+
+        log.error(invalidFormatException.getMessage(), invalidFormatException);
+        try {
+
+            return new ExceptionJson("alaska.error.invalidFormatException", invalidFormatException.getOriginalMessage());
+
+        } catch (Exception exception) {
+            log.error(ERROR_TO_RESOLVE_EXCEPTION_HANDLER, exception);
+            return new ExceptionJson("alaska.error.dateInvalidFormat", exception.getMessage());
         }
     }
 

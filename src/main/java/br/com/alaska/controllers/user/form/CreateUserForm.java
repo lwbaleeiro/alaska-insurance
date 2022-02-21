@@ -9,6 +9,9 @@ import lombok.ToString;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
+
 @Getter
 @ToString
 public class CreateUserForm {
@@ -17,8 +20,9 @@ public class CreateUserForm {
     private String name;
     @NotEmpty(message = "cpf cannot be empty!")
     private String cpf;
+    @JsonFormat(shape = OBJECT)
     private Sex sex;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     @NotEmpty(message = "email cannot be empty!")
     private String email;

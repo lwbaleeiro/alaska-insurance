@@ -27,9 +27,11 @@ public class ValidarCpfService {
 
     public static boolean valid(String cpf) {
 
-        // considera-se erro cpf's formados por uma sequencia de numeros iguais
+        /*
+           considera-se erro cpf's formados por uma sequencia de numeros iguais
+         */
         if (cpfsInvalidos.contains(cpf) || cpf.length() != 11) {
-            log.info(" cpf is not valid {}", cpf);
+            log.warn(" cpf is not valid {}", cpf);
             return false;
         }
 
