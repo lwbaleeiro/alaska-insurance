@@ -2,7 +2,9 @@ package br.com.alaska.service.user.impl;
 
 import br.com.alaska.config.mail.EmailBuilderHtml;
 import br.com.alaska.config.mail.EmailSenderService;
+import br.com.alaska.controllers.user.form.CreateUserForm;
 import br.com.alaska.controllers.user.response.UserResponse;
+import br.com.alaska.converters.user.UserConverter;
 import br.com.alaska.entity.token.ConfirmationToken;
 import br.com.alaska.entity.user.User;
 import br.com.alaska.exceptions.user.*;
@@ -12,6 +14,7 @@ import br.com.alaska.service.user.EmailValidatorService;
 import br.com.alaska.service.user.UserService;
 import br.com.alaska.service.user.ValidarCpfService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,13 +31,17 @@ public record UserServiceImpl(
         ConfirmationTokenService confirmationTokenService,
         EmailSenderService emailSenderService,
         EmailBuilderHtml emailBuilderHtml) implements UserService {
+    //todo verificar injeção de dependência para UserConverter
 
+    //todo mudar para variável no application.yml
     private static final String ACTIVATION_EMAIL_LINK = "http://localhost:8080/v1/users/confirmation?token=";
 
     @Override
-    public void createUser(User user) {
+    public UserResponse createUser(CreateUserForm createUserForm) {
 
         log.info(" createUser");
+        UserConverter userConverter = new UserConverter(new BCryptPasswordEncoder());
+        User user = userConverter.convert(createUserForm);
 
         this.checkUserEmailIsValid(user);
         this.checkUserCpfIsValid(user);
@@ -63,6 +70,14 @@ public record UserServiceImpl(
 
         String email = emailBuilderHtml.buildEmail(user.getName(), ACTIVATION_EMAIL_LINK + token);
         emailSenderService.send(user.getEmail(), email);
+
+        return new UserResponse(user.getId(),
+                user.getName(),
+                user.getCpf(),
+                user.getSex(),
+                user.getDateOfBirth(),
+                user.getEmail(),
+                user.getCellphone());
     }
 
     @Override
@@ -90,9 +105,11 @@ public record UserServiceImpl(
     }
 
     @Override
-    public UserResponse alterUser(User user) {
+    public UserResponse alterUser(CreateUserForm createUserForm) {
 
         log.info(" alter user");
+        UserConverter userConverter = new UserConverter(new BCryptPasswordEncoder());
+        User user = userConverter.convert(createUserForm);
 
         Optional<User> userFound = userRepository.findById(user.getId());
         if (userFound.isEmpty()) {
@@ -104,14 +121,13 @@ public record UserServiceImpl(
         try {
             User userAlter = userRepository.save(user);
 
-            return UserResponse.builder()
-                    .cellphone(userAlter.getCellphone())
-                    .cpf(userAlter.getCpf())
-                    .dateOfBirth(userAlter.getDateOfBirth())
-                    .email(userAlter.getEmail())
-                    .name(userAlter.getName())
-                    .sex(userAlter.getSex())
-                    .build();
+            return new UserResponse(userAlter.getId(),
+                    userAlter.getName(),
+                    userAlter.getCpf(),
+                    userAlter.getSex(),
+                    userAlter.getDateOfBirth(),
+                    userAlter.getEmail(),
+                    userAlter.getCellphone());
 
         } catch (Exception error) {
             log.error("error: {}", error.getMessage());
@@ -146,15 +162,13 @@ public record UserServiceImpl(
 
         User user = optionalUser.orElseThrow(UserNotFoundByIdException::new);
 
-        return UserResponse.builder()
-                .id(user.getId())
-                .cellphone(user.getCellphone())
-                .cpf(user.getCpf())
-                .dateOfBirth(user.getDateOfBirth())
-                .email(user.getEmail())
-                .name(user.getName())
-                .sex(user.getSex())
-                .build();
+        return new UserResponse(user.getId(),
+                user.getName(),
+                user.getCpf(),
+                user.getSex(),
+                user.getDateOfBirth(),
+                user.getEmail(),
+                user.getCellphone());
     }
 
     @Override
@@ -166,15 +180,13 @@ public record UserServiceImpl(
         List<User> all = userRepository.findAll();
 
         for (User user : all) {
-            userResponses.add(UserResponse.builder()
-                    .id(user.getId())
-                    .cellphone(user.getCellphone())
-                    .cpf(user.getCpf())
-                    .dateOfBirth(user.getDateOfBirth())
-                    .email(user.getEmail())
-                    .name(user.getName())
-                    .sex(user.getSex())
-                    .build());
+            userResponses.add(new UserResponse(user.getId(),
+                    user.getName(),
+                    user.getCpf(),
+                    user.getSex(),
+                    user.getDateOfBirth(),
+                    user.getEmail(),
+                    user.getCellphone()));
         }
 
         return userResponses;

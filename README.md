@@ -15,9 +15,3 @@ Docker 4.4.4 ou superior
     - *Derruba todos os containers ativos no momento.*
 - **docker run -p {port}:{port} {name-image}:{version-image}**
     - *Executa uma única imagem e sobe o container.*
-
-## Após subir os containers:
-**Zipkin**: http://localhost:9411/zipkin/ \
-**Rabbitmq**: http://localhost:15672/#/ \
-**Eureka**: http://localhost:8761/ \
-**Swagger**: http://localhost:8765/swagger-ui.html

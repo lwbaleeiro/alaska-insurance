@@ -22,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @Tag(name = "Authentication API")
-@RequestMapping("/v1/auth")
+@RequestMapping("/api/v1/auth")
 public record AuthenticationController(AuthenticationManager authenticationManager,
                                        TokenService tokenService,
                                        UserRepository userRepository) {

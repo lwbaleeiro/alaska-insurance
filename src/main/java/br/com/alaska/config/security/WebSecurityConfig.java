@@ -32,8 +32,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers( "/v3/api-docs").permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/auth").permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/user/create").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/auth").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/user/create").permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
