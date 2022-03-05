@@ -7,7 +7,7 @@ public class UserAlreadyExistsWithCpfException extends BaseException {
 
     @Override
     public String getCode() {
-        return "fryer.bank.error.usersAlreadyExistsWithCpfException";
+        return "alaska.error.usersAlreadyExistsWithCpfException";
     }
 
     @Override

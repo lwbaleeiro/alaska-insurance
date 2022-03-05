@@ -8,6 +8,8 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static javax.persistence.GenerationType.AUTO;
+
 @NoArgsConstructor
 @Entity
 @Getter
@@ -15,7 +17,8 @@ import java.time.LocalDateTime;
 public class ConfirmationToken {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "CONFIRMATION_TOKEN_SEQUENCE", sequenceName = "confirmation_token_sequence_id", allocationSize = 1)
+    @GeneratedValue(strategy = AUTO, generator = "CONFIRMATION_TOKEN_SEQUENCE")
     private Long id;
     @Column(nullable = false)
     private String token;

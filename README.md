@@ -1,3 +1,6 @@
+[![Continuous Integration with Github](https://github.com/lwbaleeiro/alaska-insurance/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/lwbaleeiro/alaska-insurance/actions/workflows/docker-publish.yml)
+
+
 ## Requerimentos:
 Java 17 ou superior \
 Docker 4.4.4 ou superior

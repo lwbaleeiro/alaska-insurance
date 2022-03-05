@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import static javax.persistence.GenerationType.AUTO;
+
 @Entity(name = "users")
 @Builder
 @NoArgsConstructor
@@ -25,7 +27,8 @@ import java.util.Objects;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "USER_SEQUENCE", sequenceName = "user_sequence_id", allocationSize = 1)
+    @GeneratedValue(strategy = AUTO, generator = "USER_SEQUENCE")
     private Long id;
     private String name;
     private Sex sex;

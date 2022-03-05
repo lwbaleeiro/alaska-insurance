@@ -7,7 +7,7 @@ public class UserAlreadyExistsWithEmailException extends BaseException {
 
     @Override
     public String getCode() {
-        return "freyer.bank.error.userAlreadyExistsWithEmailException";
+        return "alaska.error.userAlreadyExistsWithEmailException";
     }
 
     @Override

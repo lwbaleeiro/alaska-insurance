@@ -14,6 +14,7 @@ import br.com.alaska.service.user.EmailValidatorService;
 import br.com.alaska.service.user.UserService;
 import br.com.alaska.service.user.ValidarCpfService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,22 +26,36 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public record UserServiceImpl(
-        UserRepository userRepository,
-        EmailValidatorService emailValidatorService,
-        ConfirmationTokenService confirmationTokenService,
-        EmailSenderService emailSenderService,
-        EmailBuilderHtml emailBuilderHtml) implements UserService {
-    //todo verificar injeção de dependência para UserConverter
+public class UserServiceImpl implements UserService {
 
-    //todo mudar para variável no application.yml
-    private static final String ACTIVATION_EMAIL_LINK = "http://localhost:8080/v1/users/confirmation?token=";
+    private final UserRepository userRepository;
+    private final UserConverter userConverter;
+    private final ConfirmationTokenService confirmationTokenService;
+    private final EmailSenderService emailSenderService;
+    private final EmailBuilderHtml emailBuilderHtml;
+    private final EmailValidatorService emailValidatorService;
+
+    @Value("${url.confirmation-token}")
+    private String urlActivationEmail;
+
+    public UserServiceImpl(UserRepository userRepository,
+                           ConfirmationTokenService confirmationTokenService,
+                           EmailValidatorService emailValidatorService,
+                           EmailSenderService emailSenderService,
+                           EmailBuilderHtml emailBuilderHtml) {
+
+        this.userRepository = userRepository;
+        this.emailValidatorService = emailValidatorService;
+        this.confirmationTokenService = confirmationTokenService;
+        this.emailSenderService = emailSenderService;
+        this.emailBuilderHtml = emailBuilderHtml;
+        this.userConverter = new UserConverter(new BCryptPasswordEncoder());
+    }
 
     @Override
     public UserResponse createUser(CreateUserForm createUserForm) {
 
         log.info(" createUser");
-        UserConverter userConverter = new UserConverter(new BCryptPasswordEncoder());
         User user = userConverter.convert(createUserForm);
 
         this.checkUserEmailIsValid(user);
@@ -68,7 +83,7 @@ public record UserServiceImpl(
                 LocalDateTime.now().plusMinutes(15),
                 user));
 
-        String email = emailBuilderHtml.buildEmail(user.getName(), ACTIVATION_EMAIL_LINK + token);
+        String email = emailBuilderHtml.buildEmail(user.getName(), urlActivationEmail + token);
         emailSenderService.send(user.getEmail(), email);
 
         return new UserResponse(user.getId(),
@@ -108,7 +123,6 @@ public record UserServiceImpl(
     public UserResponse alterUser(CreateUserForm createUserForm) {
 
         log.info(" alter user");
-        UserConverter userConverter = new UserConverter(new BCryptPasswordEncoder());
         User user = userConverter.convert(createUserForm);
 
         Optional<User> userFound = userRepository.findById(user.getId());

@@ -7,7 +7,7 @@ public class UserNotFoundByIdException extends BaseException {
 
     @Override
     public String getCode() {
-        return "fryer.bank.error.usersNotFoundByIdException";
+        return "alaska.error.userNotFoundByIdException";
     }
 
     @Override

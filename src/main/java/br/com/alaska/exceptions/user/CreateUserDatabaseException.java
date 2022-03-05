@@ -8,7 +8,7 @@ public class CreateUserDatabaseException extends BaseException {
 
     @Override
     public String getCode() {
-        return "alaska.users.database.error.createUsersDatabaseException";
+        return "alaska.user.database.error.createUsersDatabaseException";
     }
 
     @Override
