@@ -25,7 +25,7 @@ public class ControllerExceptionHandler {
     private static final String ERROR_TO_RESOLVE_EXCEPTION_HANDLER = "Error to resolve exception handler";
     private static final String SAO_EXCEPTION_HANDLER_ERROR_TO_RESOLVE_EXCEPTION = "sao.exceptionHandler.errorToResolveException";
 
-    @ExceptionHandler({ BaseException.class})
+    @ExceptionHandler({BaseException.class})
     @ResponseBody
     public ResponseEntity<ExceptionJson> saoException(final BaseException e, final HttpServletResponse response) {
 
