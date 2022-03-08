@@ -37,6 +37,7 @@ public class EmailSenderService implements EmailSender {
     @Override
     @Async
     public void send(String to, String email) {
+        log.info("Sending e-mail to {}, email {}", to, email);
 
         String from = mailtrapSender;
         String username = mailtrapUsername;
