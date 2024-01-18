@@ -7,6 +7,9 @@ Alaska Insurance is an application for insurance purchasing.
 Java 17 ou superior \
 Docker 4.4.4 ou superior
 
+## Como usar
+- Lembrar de adicionar o jar do email
+
 ## Comandos Docker
 - **docker compose up -d**
     - *Através do terminal, dentro da pasta onde contem o docker-compose-yml monta as imagens que subiram no [DockerHub](https://hub.docker.com/u/lwbaleeiro).*

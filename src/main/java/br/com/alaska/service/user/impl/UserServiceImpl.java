@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     private final EmailBuilderHtml emailBuilderHtml;
     private final EmailValidatorService emailValidatorService;
 
-    @Value("${url.confirmation-token}")
+    @Value("${url.activation-email}")
     private String urlActivationEmail;
 
     public UserServiceImpl(UserRepository userRepository,

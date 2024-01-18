@@ -24,12 +24,12 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
-        "url.confirmation-token=http://localhost:8080/api/v1/user/confirmation?token=",
+        "url.activation-email=http://localhost:8080/api/v1/user/confirmation?token=",
 })
 class AuthenticationControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+
+    private final MockMvc mockMvc;
 
     @MockBean
     private UserRepository userRepository;
@@ -37,6 +37,10 @@ class AuthenticationControllerTest {
     private ConfirmationTokenService confirmationTokenService;
     @MockBean
     private EmailSenderService emailSenderService;
+
+    AuthenticationControllerTest(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
 
     static Stream<Arguments> requestJsonAndStatus() {
         return Stream.of(

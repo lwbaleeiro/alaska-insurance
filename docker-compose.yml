@@ -15,24 +15,24 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: alaska_db
 
-  alaska:
-    #image: lwbaleeiro/alaska:latest
-    image: lwbaleeiro/alaska:0.0.1-SNAPSHOT
-    restart: always
-    ports:
-      - 8080:8080
-    depends_on:
-      - alaska-db
-    networks:
-      - services-network
-    environment:
-      TZ: America/Sao_Paulo
-      SPRING.DATASOURCE.URL: jdbc:postgresql://alaska-db:5432/alaska_db
-      SPRING.DATASOURCE.USERNAME: postgres
-      SPRING.DATASOURCE.PASSWORD: postgres
-      SPRING.FLYWAY.URL: jdbc:postgresql://alaska-db:5432/alaska_db
-      SPRING.FLYWAY.USER: postgres
-      SPRING.FLYWAY.PASSWORD: postgres
+#  alaska:
+#    image: lwbaleeiro/alaska:latest
+#    #image: lwbaleeiro/alaska:0.0.1-SNAPSHOT
+#    restart: always
+#    ports:
+#      - 8080:8080
+#    depends_on:
+#      - alaska-db
+#    networks:
+#      - services-network
+#    environment:
+#      TZ: America/Sao_Paulo
+#      SPRING.DATASOURCE.URL: jdbc:postgresql://alaska-db:5432/alaska_db
+#      SPRING.DATASOURCE.USERNAME: postgres
+#      SPRING.DATASOURCE.PASSWORD: postgres
+#      SPRING.FLYWAY.URL: jdbc:postgresql://alaska-db:5432/alaska_db
+#      SPRING.FLYWAY.USER: postgres
+#      SPRING.FLYWAY.PASSWORD: postgres
 
 networks:
   services-network:
