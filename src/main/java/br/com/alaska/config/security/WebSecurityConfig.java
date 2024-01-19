@@ -29,21 +29,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
-        auth.userDetailsService(userAuthenticationService).passwordEncoder(new BCryptPasswordEncoder());
+       auth.userDetailsService(userAuthenticationService).passwordEncoder(new BCryptPasswordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/auth").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/user/create").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.addFilterBefore(tokenFilterRequest, UsernamePasswordAuthenticationFilter.class);
+        // Desabilita a segurança para todas as URLs
+        http.authorizeRequests().anyRequest().permitAll();
+
+        // Desabilita a proteção CSRF (Cross-Site Request Forgery)
+        http.csrf().disable();
+
+//        http.csrf().disable()
+//                .authorizeRequests()
+//                .antMatchers("/swagger-ui.html").permitAll()
+//                .antMatchers(HttpMethod.POST, "/api/v1/auth").permitAll()
+//                .antMatchers(HttpMethod.POST, "/api/v1/user/create").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//
+//        http.addFilterBefore(tokenFilterRequest, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
@@ -54,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/**.html", "/v3/api-docs", "/webjars/**", "/configuration/**", "/swagger-resources/**");
+        web.ignoring().antMatchers("/swagger-ui.html", "/**.html", "/v3/api-docs", "/webjars/**", "/configuration/**", "/swagger-resources/**");
     }
 }
 
