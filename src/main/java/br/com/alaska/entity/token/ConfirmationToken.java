@@ -1,14 +1,16 @@
 package br.com.alaska.entity.token;
 
 import br.com.alaska.entity.user.User;
+
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static javax.persistence.GenerationType.AUTO;
+import static jakarta.persistence.GenerationType.AUTO;
+
 
 @NoArgsConstructor
 @Entity

@@ -3,11 +3,11 @@ package br.com.alaska.controllers.auth;
 import br.com.alaska.controllers.auth.form.AuthenticationForm;
 import br.com.alaska.controllers.auth.response.AuthenticationResponse;
 import br.com.alaska.exceptions.authentication.AuthenticationFailedException;
-import br.com.alaska.repository.user.UserRepository;
 import br.com.alaska.service.token.TokenService;
 import br.com.alaska.service.token.UserAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 @Slf4j
 @RestController

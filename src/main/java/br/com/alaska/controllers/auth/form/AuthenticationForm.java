@@ -1,8 +1,7 @@
 package br.com.alaska.controllers.auth.form;
 
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
-import javax.validation.constraints.NotEmpty;
 
 public record AuthenticationForm(@NotEmpty(message = "e-mail cannot be empty!")
                                  String email,

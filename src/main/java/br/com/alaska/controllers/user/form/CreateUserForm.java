@@ -5,9 +5,9 @@ import br.com.alaska.entity.user.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.OBJECT;
